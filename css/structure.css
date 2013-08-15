@@ -1,0 +1,40 @@
+body{
+	margin:0;
+	padding:0;
+	background: white;
+}
+
+#container{
+	margin: auto;
+	max-width: 1000px;
+	position: relative;
+}
+
+ #content{
+	margin-bottom: 0px;
+	min-height: 600px;
+	height: 100%;
+}
+
+#leftcolumn{
+ 	float: left;
+	width: 71%;
+	max-width: 710px;
+}
+
+#rightcolumn, #newscolumn{
+	float: right;
+	height: 100%;
+	width: 29%;
+	max-width:290px;
+	bottom: 0;
+}
+
+.story{
+	max-height:90%;
+}
+
+#newscolumn .story{
+	width: 70%;
+	margin-left: -40%;
+}

@@ -1,0 +1,142 @@
+/* LEFT COLUMN ELEMENTS, TOP TO BOTTOM*/
+
+.identity{
+	border-bottom: solid black 1px;
+	padding-bottom: 10px;
+	font-family: verdana;
+	font-weight: bold;
+	font-size: 17px;
+	position: relative;
+	width: 100%
+}
+
+.logo{
+	background: #193177;
+	color: white;
+	height: 125px;
+	position: relative;
+	width: 135px;
+}
+
+a{
+	text-decoration: none;
+}
+
+.logo p{
+	bottom: 5px;
+	font-size: 18px;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+}
+
+.logo span{
+	color: #CCD7E7;
+	font-size: 15px;
+	margin: 0px 2px 0px 2px;
+}
+
+.slogan{
+	color: #193177;
+	font-style: italic;
+	position: absolute;
+	left: 145px;
+	bottom: 10px;
+	margin: 0px;
+}
+
+.slogan sup{
+	font-size: .5em;
+}
+
+.blurb{
+	border-right: solid black 1px;
+	font-family: Palatino Linotype, Palatino, URW Palladio L, Serif;
+	margin-top: 0px;
+	padding: 20px 10px 0px 0px;
+	text-align: right;
+	width: 255px;
+}
+
+.blurb h2{
+	font-weight: normal;
+}
+
+.photobox{
+	float: right;
+	margin-right: 22px;
+	margin-left: 18px;
+	min-height: 400px;
+}
+
+.photobox img{
+	margin: 10% auto 5% auto;
+	max-height: 85%;
+	max-width: 400px;;
+}
+
+/*RIGHT COLUMN ELEMENTS */
+
+#rightcolumn{ font-family: helvetica;}
+
+.news{
+	margin-top: 70px;
+}
+
+.news a{
+	color: #5a5a5a;
+	font-size: 12px;
+	font-style: italic;
+	text-decoration: none;
+}
+
+.news a img{
+	border: none;
+    height: 100%;
+}
+
+.news .leftbracket{
+	border:  solid black 1px;
+	border-right: none;
+	float: left;
+	height: 5em;
+	margin-right: 12px;
+	width: 12px;
+}
+
+.news p{
+	border-right: solid black 1px;
+	height: 5em;
+	margin: 0px;
+	padding-right: 3px;
+	text-align: right;
+}
+
+.news .icon{
+	float: left;
+    margin-top: -10px;
+    height:20px;
+}
+
+.news span{
+	display: block;
+	padding-left: 30px;
+}
+
+.story{
+	bottom: 0px;
+	border-left: solid black 1px;
+	max-height: 70%;/* IE fix */max-width: 100%;
+	overflow: auto;
+	padding-left: 10px;
+	position: absolute;
+}
+
+.story .post{
+	padding-left: 30px;
+}
+
+.story .post h3{
+	color: #193177;
+	margin-left: -20px;
+}
