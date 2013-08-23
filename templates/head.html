@@ -1,0 +1,13 @@
+{% extends "contentpage.html" %}
+{% block head %}
+	{{ super() }}
+	{% for stylesheet in ["structure.css", "content.css", "nav.css" ] %}
+		{{ create_resource_link("link", prefix="css", type="text/css", rel="stylesheet", href=stylesheet) }}
+	{% endfor %}
+
+	{% for script in ["jquery-1.10.2.min.js",'jquery.nav.js'] %}
+		{{ create_resource_link(script, prefix="scripts", type="text/javascript", src=script) }} 
+	{% endfor %}
+
+	<link type="image/gif" rel="icon" href={{ url_for('static', filename=img/favicon.gif) }} />
+{% endblock %}
