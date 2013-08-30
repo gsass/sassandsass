@@ -1,0 +1,16 @@
+<div id="nav">
+	<ul class="heads">
+	{% for head in generate_navbar() %}
+		<li>
+		<a href="{{ url_for(head[page][0]) }}">{{ head[page][1] }}</a>
+		{% if len(head[children]) %}
+		<ul class="l1">
+			{% for child in head[children] %}
+			<li><a href="{{ url_for(child[0]) }}">{{ child[1] }}</a></li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+</div>
