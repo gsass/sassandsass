@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for
 from linkers import create_resource_link
 
 app=Flask(__name__)
+app.config.from_object(__name__)
 app.jinja_env.globals.update(create_resource_link=create_resource_link)
 
 @app.route('/<name>')
