@@ -2,10 +2,11 @@ from elementtree import ElementTree as et
 from sys import stdin
 import sqlite3
 from sassandsass import app
-from sassandsass.dbtools import *
+from flask import g
 
 
 class XMLExtractor:
+    '''A class to extract XML content from the old content.xml files used by the PHP site.'''
     def __init__(self):
         self.tree = None
 
@@ -50,7 +51,15 @@ class XMLExtractor:
             return "%(text)s%(ctext)s%(tail)s" % components
 
 if __name__ == "__main__":
-    fname = stdin.read().strip()
+    '''reads one or more filenames writted to stdio, and imports them into the app db.
+    
+    Recommended use: ls [your content folder] | python xml_import.py'''
+    fnames = stdin.readlines()
     xe = XMLExtractor()
-    xe.load(et.parse(fname))
-    print xe.extract("story")
+    for line in fnames:
+        line=line.strip()
+        xe.load(et.parse(line))
+        fields = {}
+        for field in ['title', 'blurb', 'imagename', 'content']:
+            fields[field] = xe.extract(field)
+        g.db.execute('INSERT INTO pages (?) VALUES ?', ",".join(fields.keys()), ",".join(fields.values))
