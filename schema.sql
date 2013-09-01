@@ -1,14 +1,14 @@
 drop table if exists pages;
 create table pages (
-  id Integer not null auto_increment,
-  link_alias text primary key not null,
+  id Integer primary key not null,
+  link_alias text not null,
   title text not null,
   blurb text not null,
   imagename text,
   content text
 );
 
-drop table is exists nav;
+drop table if exists nav;
 create table nav (
   id Integer primary key not null,
   rank Integer not null,

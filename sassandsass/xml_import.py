@@ -11,7 +11,7 @@ class XMLExtractor:
         self.tree = None
 
     def load(self, eltree):
-        self.tree = eltree
+        self.tree = et.parse(eltree)
 
     def extract(self, chname):
         node = None
@@ -50,6 +50,14 @@ class XMLExtractor:
         else:
             return "%(text)s%(ctext)s%(tail)s" % components
 
+    def import_page(self, page):
+        self.load(page)
+        fields = {}
+        for field in ['title', 'blurb', 'imagename', 'content']:
+            fields[field] = self.extract(field)
+        g.db.execute('INSERT INTO pages (?) VALUES ?', ",".join(fields.keys()), ",".join(fields.values))
+        g.db.commit()
+
 if __name__ == "__main__":
     '''reads one or more filenames writted to stdio, and imports them into the app db.
     
@@ -58,8 +66,4 @@ if __name__ == "__main__":
     xe = XMLExtractor()
     for line in fnames:
         line=line.strip()
-        xe.load(et.parse(line))
-        fields = {}
-        for field in ['title', 'blurb', 'imagename', 'content']:
-            fields[field] = xe.extract(field)
-        g.db.execute('INSERT INTO pages (?) VALUES ?', ",".join(fields.keys()), ",".join(fields.values))
+        xe.import_page(line)
