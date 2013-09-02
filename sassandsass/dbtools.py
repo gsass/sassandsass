@@ -22,3 +22,7 @@ def teardown_request(exception):
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
+
+def check_page_exists(pagename):
+    page_id = g.db.execute("SELECT id FROM pages WHERE link_alias = ?", pagename)
+    return (len(page_id.fetchall()) == 1)

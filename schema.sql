@@ -1,7 +1,7 @@
 drop table if exists pages;
 create table pages (
   id Integer primary key not null,
-  link_alias text not null,
+  link_alias text unique not null,
   title text not null,
   blurb text not null,
   imagename text,
