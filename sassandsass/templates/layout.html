@@ -4,7 +4,7 @@
 <html xmlns="http://www/w3/org/1999/xhtml">
 
 	{% block head %}
-	{% include head.html with context%}
+	{% include "head.html" with context%}
 	{% endblock %}
 
 	<body>
@@ -26,7 +26,7 @@
 
 			<div id="nav">
 				{% block nav %}
-				{% include nav.html ignore missing %}
+				{% include "nav.html" ignore missing %}
 				{% endblock %}
 			</div>
 		</div>

@@ -19,12 +19,12 @@ def namedpage(name):
     return render_template('content.html', name=name)
 
 @app.route('/news/<article>')
-def namedpage(name):
+def newspage(name):
     return render_template('news.html', article=article)
 
 @app.route('/import')
 def importpage(name):
-    if request.method == "POST":
+    if (request.method == "POST"):
         importer = XE()
         files = request.form["files"]
         errors = {}
@@ -38,6 +38,6 @@ def importpage(name):
             return render_remplate('import.html', errors=errors)
         else:
             flash("Yo you imported these files:\n %s" % "\n".join(files) )
-            return redirect(url_for('/')
+            return redirect(url_for('/'))
     else:
         return render_remplate('import.html')

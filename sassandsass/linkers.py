@@ -8,4 +8,7 @@ def create_resource_link(name, prefix="", **kwargs):
                     else '%s=\"%s\"' % (key, url_for('static',  
                                         filename='/'.join([prefix, value])))
                     for key, value in kwargs.items()]
-    return "<%s %s />" % (name, ' '.join(attributes) )
+    if (name.lower() != "script"):
+        return "<%s %s />" % (name, ' '.join(attributes) )
+    else:
+        return "<%s %s></%s>" % (name, ' '.join(attributes), name)
