@@ -10,11 +10,24 @@
 	<body>
 		<div id="container">
 			<div id="content">
-				
+
 			{% block content %}
 				<div id="leftcolumn">
-					{% block leftcolumn %}
-					{% endblock %}
+                                    {% block leftcolumn %}
+                                    <div class='identity'>
+                                        <a href="{{ url_for('index') }}">
+                                            <div class='logo'>
+                                                <p>SASS<span>&amp;</span>SASS</p>
+                                            </div>
+                                        </a>
+                                        <p class="slogan">Helping the body fight disease&trade;</p>
+                                    </div>
+                                    
+                                    {% for message in get_flashed_messages() %}
+                                    <div class=flash>{{ message }}</div>
+                                    {% endfor %}
+
+                                    {% endblock %}
 				</div>
 
 				{% block rightcolumn %}
@@ -31,5 +44,5 @@
 			</div>
 		</div>
 	</body>
-	
+
 </html>

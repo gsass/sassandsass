@@ -25,4 +25,8 @@ def teardown_request(exception):
 
 def check_page_exists(pagename):
     page_id = g.db.execute("SELECT id FROM pages WHERE link_alias = ?", pagename)
-    return (len(page_id.fetchall()) == 1)
+    return (page_id.fetchone() is not None)
+
+def fetch_page_content(pagename):
+    cur = g.db.execute("SELECT title, blurb, imagename, content from pages WHERE link_alias = ?", pagename)
+    return cur.fetchone()

@@ -9,14 +9,19 @@ class XMLExtractor:
     '''A class to extract XML content from the old content.xml files used by the PHP site.'''
     def __init__(self):
         self.tree = None
+        self.filename = ""
 
     def load(self, eltree):
-        self.tree = et.parse(eltree)
+        self.filename = eltree
+        self.tree = et.parse(eltree).getroot()
+
+    def read(self, stream, filename):
+        self.filename = filename
+        self.tree = et.fromstring(stream)
 
     def extract(self, chname):
         node = None
-        for child in self.tree.getroot():
-            print child.tag
+        for child in self.tree:
             if child.tag == chname:
                 node = child
                 break
@@ -50,16 +55,20 @@ class XMLExtractor:
         else:
             return "%(text)s%(ctext)s%(tail)s" % components
 
-    def import_page(self, page):
-        self.load(page)
-        fields = {}
+    def import_page(self, page, filename):
+        self.read(page, filename)
+        fields = [self.filename.split('.')[0]]
         for field in ['title', 'blurb', 'imagename', 'content']:
-            fields[field] = self.extract(field)
-        g.db.execute('INSERT INTO pages (?) VALUES ?', ",".join(fields.keys()), ",".join(fields.values))
+            fields.append(self.extract(field))
+        g.db.execute('INSERT INTO pages ' +
+                    '(link_alias,title,blurb,imagename,content) ' + 
+                        'VALUES (?,?,?,?,?);', 
+                        fields )
         g.db.commit()
 
 if __name__ == "__main__":
-    '''reads one or more filenames writted to stdio, and imports them into the app db.
+    '''reads one or more filenames writted to stdio, and imports them 
+    into the app db.
     
     Recommended use: ls [your content folder] | python xml_import.py'''
     fnames = stdin.readlines()

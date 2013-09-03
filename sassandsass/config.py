@@ -1,5 +1,5 @@
 class Config:
-    DATABASE = '/tmp/flaskr.db'
+    DATABASE = '/tmp/sassandsass.db'
     SECRET_KEY = 'cream'
     LANDING_PAGE = 'aboutus'
     
