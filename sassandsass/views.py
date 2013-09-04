@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect, flash
+from flask import render_template, url_for, request, redirect, flash, abort
 from sassandsass import app
 from sassandsass.dbtools import *
 from sassandsass.linkers import create_resource_link
@@ -11,17 +11,24 @@ import sqlite3
 '''Add functions which are called from views to the app's jinja context.'''
 app.jinja_env.globals.update(create_resource_link = create_resource_link)
 app.jinja_env.globals.update(generate_navbar = generate_navbar)
+app.jinja_env.globals.update(zip = zip)
+
 
 @app.route('/')
 def index():
-    return render_template('content.html', name=app.config['LANDING_PAGE'])
+    index = app.config['LANDING_PAGE']
+    if page_exists(index):
+        return render_template('content.html', content = fetch_page_content(index))
+    else:
+        flash("Yo you should import %s.xml" % index)
+        return redirect(url_for('importpage'))
 
 @app.route('/<name>')
 def namedpage(name):
     if page_exists(name):
         return render_template('content.html', content=fetch_page_content(name))
     else:
-        return redirect(url_for('404'))
+        abort(404)
 
 @app.route('/news')
 def newspage(name):
