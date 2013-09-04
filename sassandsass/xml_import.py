@@ -3,6 +3,7 @@ from sys import stdin
 import sqlite3
 from sassandsass import app
 from flask import g
+from re import sub
 
 
 class XMLExtractor:
@@ -25,7 +26,7 @@ class XMLExtractor:
             if child.tag == chname:
                 node = child
                 break
-        if node:
+        if node is not None:
             return self.get_text_content(node, chname)
         else:
             return ""
@@ -58,21 +59,15 @@ class XMLExtractor:
     def import_page(self, page, filename):
         self.read(page, filename)
         fields = [self.filename.split('.')[0]]
-        for field in ['title', 'blurb', 'imagename', 'content']:
-            fields.append(self.extract(field))
+        for fieldname in ['name', 'blurb', 'bigimg', 'story']:
+            field = self.extract(fieldname)
+            if fieldname == 'bigimg':
+                field = sub('/?(img|IMG)/','', field)
+            elif fieldname == 'blurb':
+                field = sub("</?[hH]2 ?>","",field).strip()
+            fields.append(field)
         g.db.execute('INSERT INTO pages ' +
                     '(link_alias,title,blurb,imagename,content) ' + 
                         'VALUES (?,?,?,?,?);', 
                         fields )
         g.db.commit()
-
-if __name__ == "__main__":
-    '''reads one or more filenames writted to stdio, and imports them 
-    into the app db.
-    
-    Recommended use: ls [your content folder] | python xml_import.py'''
-    fnames = stdin.readlines()
-    xe = XMLExtractor()
-    for line in fnames:
-        line=line.strip()
-        xe.import_page(line)

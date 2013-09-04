@@ -23,10 +23,11 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
-def check_page_exists(pagename):
-    page_id = g.db.execute("SELECT id FROM pages WHERE link_alias = ?", pagename)
+def page_exists(pagename):
+    page_id = g.db.execute("SELECT id FROM pages WHERE link_alias = ?", (pagename,))
     return (page_id.fetchone() is not None)
 
 def fetch_page_content(pagename):
-    cur = g.db.execute("SELECT title, blurb, imagename, content from pages WHERE link_alias = ?", pagename)
-    return cur.fetchone()
+    cur = g.db.execute("SELECT title, blurb, imagename, content " +
+            "FROM pages WHERE link_alias = ?", (pagename,))
+    return dict(zip(["title","blurb", "img", "content"], cur.fetchone()))
