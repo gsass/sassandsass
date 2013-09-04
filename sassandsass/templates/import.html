@@ -1,0 +1,22 @@
+
+{% extends 'layout.html' %}
+
+{% block leftcolumn %}
+{{ super() }}
+{% if errors %}
+    <h3>Oops.</h3><br>
+    <p>Looks like errors were encountered while importing the following files:</p>
+        <ul>
+        {% for file, error in errors.items() %}
+        <li>{{file}} : {{error}}</li>
+        {% endfor %}
+        </ul>
+{% endif %}
+
+    <p> Looks like you need to import some files to fill out the content on your website.  Which files will you need? </p>
+
+    <form action="{{ url_for('importpage') }}" method="POST" enctype="multipart/form-data">
+        Files: <input type=file name="xml" multiple>
+        <input type=submit value=Submit>
+    </form>
+{% endblock %}

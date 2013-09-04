@@ -1,5 +1,23 @@
 {% extends "layout.html" %}
 
-{% block head %}
+{% block leftcolumn %}
 {{ super() }}
+<div class="photobox">
+    <img class="bigimg" src= {{ url_for('static', filename = "img/%s" % content["img"]) }} /> 
+</div>
+
+<div class="blurb">
+    <h2>
+        {{ content["blurb"] }}
+    </h2>
+</div>
+{% endblock %}
+
+{% block rightcolumn %}
+<div id="rightcolumn">
+    {% include "rcolbracket.html" with context %}
+    <div class="story">
+        {{ content['content']|safe }}
+    </div>
+</div>
 {% endblock %}

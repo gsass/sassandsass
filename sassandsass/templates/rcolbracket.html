@@ -1,0 +1,15 @@
+<div class="news">
+    <span><b>Contact Us</b></span>
+    <div class="leftbracket"></div>
+
+    <p>
+    115A Flint Road <br>
+    Oak Ridge, TN <br>
+    37830
+    </p>
+
+    {% for icon, link in zip(["Twitter", "LinkedIn"], ["https://twitter.com/sassandsass", "https://www.linkedin.com/company/3269338?trk=tyah"]) %}
+    <a class="icon" href="{{ link  }}"><img src={{ url_for("static", filename="img/icons/PNG/Gray/%s.png" % icon) }}/></a>
+    {% endfor %}
+    <!--Icon set from  http://medialoot.com/item/round-social-media-icons/-->    
+</div>
