@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, redirect, flash, abort
+from flask import render_template, url_for, request, redirect, flash, abort, session
 from sassandsass import app
 from sassandsass.dbtools import *
 from sassandsass.linkers import create_resource_link
@@ -11,11 +11,15 @@ import sqlite3
 '''Add functions which are called from views to the app's jinja context.'''
 app.jinja_env.globals.update(create_resource_link = create_resource_link)
 app.jinja_env.globals.update(generate_navbar = generate_navbar)
+app.jinja_env.globals.update(get_available_pages = get_available_pages)
 app.jinja_env.globals.update(zip = zip)
+app.jinja_env.globals.update(range = range)
 
 
 @app.route('/')
 def index():
+    if app.config['DEBUG']:
+        session['admin'] = True
     index = app.config['LANDING_PAGE']
     if page_exists(index):
         return render_template('content.html', content = fetch_page_content(index))
@@ -56,5 +60,10 @@ def importpage():
             flash("Yo you imported these files:\n %s" %
                     "\n".join([f.filename for f in files]) )
         return redirect(url_for('index'))
-    else:
-        return render_template('import.html')
+    return render_template('import.html')
+
+@app.route('/edit_nav', methods = ["GET", "POST"])
+def edit_nav():
+    if (request.method == "POST"):
+        pass
+    return redirect(url_for("index"))

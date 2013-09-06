@@ -1,6 +1,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html/css; charset=utf-8" />
-	<title>{{ "Sass & Sass - %s" % content["title"] }}</title>
+        <title>Sass & Sass{{" - %s" % content["title"] if content["title"] }}</title>
 	
 	{% for stylesheet in ["structure.css", "content.css", "nav.css" ] %}
 	{{ create_resource_link("link", prefix="css", type="text/css", rel="stylesheet", href=stylesheet)|safe }}

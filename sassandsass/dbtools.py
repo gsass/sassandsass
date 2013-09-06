@@ -31,3 +31,7 @@ def fetch_page_content(pagename):
     cur = g.db.execute("SELECT title, blurb, imagename, content " +
             "FROM pages WHERE link_alias = ?", (pagename,))
     return dict(zip(["title","blurb", "img", "content"], cur.fetchone()))
+
+def get_available_pages():
+    cur = g.db.execute("SELECT id, title FROM pages")
+    return cur.fetchall()

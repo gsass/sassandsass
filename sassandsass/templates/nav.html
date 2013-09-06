@@ -1,14 +1,36 @@
+{% import "navforms.html" as forms %}
+
 <ul class="heads">
-	{% for head in generate_navbar() %}
-	<li>
-	<a href="{{ url_for('contentpage', name=head[page][0]) }}">{{ head[page][1] }}</a>
-	{% if len(head[children]) %}
-	<ul class="l1">
-		{% for child in head[children] %}
-		<li><a href="{{ url_for('contentpage', name=child[0]) }}">{{ child[1] }}</a></li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-	</li>
-	{% endfor %}
+{% block heads %}
+{% set navbar = generate_navbar() %}
+{% set hloop = loop %}
+{% for head in navbar %}
+    <li>
+    {% block headitem %}
+    <a href="{{ url_for('contentpage', name=head.page[0]) }}">{{ head.page[1] }}</a>
+    {{ forms.edithead([loop.index0, 0]) if session.admin }}
+    {% endblock %}
+    {% if (len(head.children) or session.admin) %}
+    <ul class="l1">
+        {% block children %}
+        {% for child in head.children %}
+        <li> 
+        {% block childitem %} 
+        <a href="{{ url_for('contentpage', name=child[0]) }}">{{ child[1] }}</a> 
+        {{ forms.editchild([hloop.index0, loop.index]) }}
+        {% endblock %} 
+        </li>
+        {% endfor %}
+        {% if session.admin %}
+        <li>{{ forms.additem("addchild") }}</li>
+        {% endif %}
+        {% endblock %}
+    </ul>
+    {% endif %}
+    </li>
+{% endfor %}
+{% if session.admin %}
+    <li>{{ forms.additem("addhead") }}</li>
+{% endif %}
+{% endblock %}
 </ul>

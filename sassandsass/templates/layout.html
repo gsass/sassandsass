@@ -36,9 +36,9 @@
 			</div>
 
 			<div id="nav">
-				{% block nav %}
-				{% include "nav.html" ignore missing %}
-				{% endblock %}
+                            {% block nav %}
+                            {% include "nav.html" ignore missing with context %}
+                            {% endblock %}
 			</div>
 		</div>
 	</body>
