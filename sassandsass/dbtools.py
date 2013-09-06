@@ -35,3 +35,20 @@ def fetch_page_content(pagename):
 def get_available_pages():
     cur = g.db.execute("SELECT id, title FROM pages")
     return cur.fetchall()
+
+def edit_nav(formdata):
+    actions = ['new','left','right','up','down','deletehead','deletechild']
+    action = None
+    for key in formdata.keys():
+        if key in actions:
+            action = key
+            break
+    if action is None:
+        return "No Valid action in requesting form data."
+    else:
+        calls = {'new' :
+                 ('INSERT INTO nav (id, head, rank) VALUES (:id, :head, :rank);',), 
+                 'deletehead' :
+                 ('DELETE FROM nav WHERE id=:id',
+                     'DELETE FROM nav WHERE id IN :children'),
+                 }

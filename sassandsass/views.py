@@ -65,5 +65,6 @@ def importpage():
 @app.route('/edit_nav', methods = ["GET", "POST"])
 def edit_nav():
     if (request.method == "POST"):
-        pass
-    return redirect(url_for("index"))
+        result = edit_nav(request.form)
+        flash(result)
+    return redirect(request.headers['Referer'])

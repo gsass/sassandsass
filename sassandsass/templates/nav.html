@@ -3,26 +3,28 @@
 <ul class="heads">
 {% block heads %}
 {% set navbar = generate_navbar() %}
-{% set hloop = loop %}
+{% set coords = {"h":0, "c":0} %}
 {% for head in navbar %}
+{{ coords.update(h=loop.index0, c=0) }}
     <li>
     {% block headitem %}
     <a href="{{ url_for('contentpage', name=head.page[0]) }}">{{ head.page[1] }}</a>
-    {{ forms.edithead([loop.index0, 0]) if session.admin }}
+    {{ forms.edithead(coords) if session.admin }}
     {% endblock %}
     {% if (len(head.children) or session.admin) %}
     <ul class="l1">
         {% block children %}
         {% for child in head.children %}
+        {{ coords.update(c = loop.index) }}
         <li> 
         {% block childitem %} 
         <a href="{{ url_for('contentpage', name=child[0]) }}">{{ child[1] }}</a> 
-        {{ forms.editchild([hloop.index0, loop.index]) }}
+        {{ forms.editchild(coords) if session.admin }}
         {% endblock %} 
         </li>
         {% endfor %}
         {% if session.admin %}
-        <li>{{ forms.additem("addchild") }}</li>
+        <li>{{ forms.additem("addchild", coords) if session.admin }}</li>
         {% endif %}
         {% endblock %}
     </ul>
@@ -30,7 +32,7 @@
     </li>
 {% endfor %}
 {% if session.admin %}
-    <li>{{ forms.additem("addhead") }}</li>
+    <li>{{ forms.additem("addhead", coords) if session.admin}}</li>
 {% endif %}
 {% endblock %}
 </ul>
