@@ -1,0 +1,32 @@
+{%- macro additem(name, parent = -1, message="Add a page.") -%}
+<form class="additem" name="{{ name }}" action="{{ url_for('edit_nav') }}" method="POST">
+    <select name="id">
+        <option value="title" selected disabled>{{ message }}</option>
+        {% for id, title in get_available_pages() %}
+        <option value="{{ id }}">{{ title }}</option>
+        {% endfor %}
+    </select>
+    <button name="new" type="submit">Add</button>
+    <input type="hidden" name="parent" value="{{ parent }}">
+</form>
+{% endmacro %}
+
+{%- macro editchild(id, parent) -%}
+    <input type="hidden" name="parent" value="{{ parent }}">
+<form class="editchild" action="{{ url_for('edit_nav') }}" method="POST">
+    <button type="submit" name="up" value="up">&uarr;</button>
+    <button type="submit" name="down" value="down">&darr;</button>
+    <button type="submit" name="delete" value="del">x</button>
+    <input type="hidden" name="parent" value="{{ parent }}">
+    <input type="hidden" name="id" value="{{ id }}">
+</form>
+{% endmacro %}
+
+{%- macro edithead(id) -%}
+<form class="edithead" action="{{ url_for('edit_nav') }}" method="POST">
+    <button type="submit" name="up" value="left">&larr;</button>
+    <button type="submit" name="down" value="right">&rarr;</button>
+    <button type="submit" name="delete" value="del">x</button>
+    <input type="hidden" name="id" value="{{ id }}">
+</form>
+{% endmacro %}

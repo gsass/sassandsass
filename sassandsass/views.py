@@ -4,6 +4,7 @@ from sassandsass.dbtools import *
 from sassandsass.linkers import create_resource_link
 from sassandsass.navbar import generate_navbar
 from sassandsass.xml_import import XMLExtractor as XE
+from sassandsass.edit_nav import Editor
 from werkzeug import secure_filename
 import sqlite3
 
@@ -13,8 +14,6 @@ app.jinja_env.globals.update(create_resource_link = create_resource_link)
 app.jinja_env.globals.update(generate_navbar = generate_navbar)
 app.jinja_env.globals.update(get_available_pages = get_available_pages)
 app.jinja_env.globals.update(zip = zip)
-app.jinja_env.globals.update(range = range)
-
 
 @app.route('/')
 def index():
@@ -65,6 +64,12 @@ def importpage():
 @app.route('/edit_nav', methods = ["GET", "POST"])
 def edit_nav():
     if (request.method == "POST"):
-        result = edit_nav(request.form)
+        e = Editor()
+        result = e.edit_nav(request.form)
         flash(result)
     return redirect(request.headers['Referer'])
+
+@app.route('/debug')
+def get_nav():
+    msg = g.db.execute("Select id from nav").fetchone()
+    return str(msg)

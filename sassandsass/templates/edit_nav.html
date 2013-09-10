@@ -1,0 +1,22 @@
+{% extends "nav.html" %}
+{% import "navforms.html" as forms %}
+
+{% block heads %}
+{{ super() }}
+<li>{{ forms.additem("addhead", g.coords) }}</li>
+{% endblock %}
+
+{% block children %}
+{{ super() }}
+<li>{{ forms.additem("addchild", g.coords) }}</li>
+{% endblock %}
+
+{% block headitem %}
+{{ super() }}
+<li>{{ forms.edithead(g.coords) }}</li>
+{% endblock %}
+
+{% block childitem %}
+{{ super() }}
+<li>{{ forms.editchild(g.coords) }}</li>
+{% endblock %}
