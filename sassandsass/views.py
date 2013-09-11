@@ -1,5 +1,5 @@
 from flask import render_template, url_for, request, redirect, flash, abort, session
-from sassandsass import app
+from sassandsass import app, lm
 from sassandsass.dbtools import *
 from sassandsass.linkers import create_resource_link
 from sassandsass.navbar import generate_navbar
@@ -17,8 +17,7 @@ app.jinja_env.globals.update(zip = zip)
 
 @app.route('/')
 def index():
-    if app.config['DEBUG']:
-        session['admin'] = True
+    session['admin'] = app.config["DEBUG"]
     index = app.config['LANDING_PAGE']
     if page_exists(index):
         return render_template('content.html', content = fetch_page_content(index))
@@ -69,7 +68,21 @@ def edit_nav():
         flash(result)
     return redirect(request.headers['Referer'])
 
-@app.route('/debug')
-def get_nav():
-    msg = g.db.execute("Select id from nav").fetchone()
-    return str(msg)
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if (request.method == "POST"):
+        pass
+    else:
+        return render_template("login.html")
+
+@app.route('/init_db')
+def install():
+    try:
+        #test to check if DB exists
+        g.db.execute("SELECT id FROM pages")
+        flash("DB already initialized.  Did you mean to import pages instead?")
+    except sqlite3.OperationalError:
+        init_db()
+        flash("DB Initialized.  Care to import some pages now?")
+    return redirect(url_for('importpage'))
+
