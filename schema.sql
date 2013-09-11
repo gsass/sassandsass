@@ -11,7 +11,7 @@ create table pages (
 drop table if exists nav;
 create table nav (
   id Integer primary key not null,
-  rank Integer not null,
+  rank Integer unique not null,
   head Boolean default False,
   children text not null
 );
