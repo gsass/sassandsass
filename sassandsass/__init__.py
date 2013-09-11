@@ -1,13 +1,10 @@
 from flask import Flask
-import sassandsass.config
+from flask.ext.login import LoginManager
 
-
-debug = True
 
 app = Flask(__name__)
-if debug:
-    app.config.from_object(config.DebugConfig)
-else:
-    app.config.from_object(config.Config)
+
+lm = LoginManager()
+lm.init_app(app)
 
 import sassandsass.views

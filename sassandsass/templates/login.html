@@ -1,0 +1,22 @@
+
+{% extends "layout.html" %}
+
+
+{% block leftcolumn %}
+{{ super() }}
+<div class="photobox">
+</div>
+
+<div class="blurb">
+    <form class="login">
+        <p>Login to access administrative functionality.</p>
+        <dl>
+            <dt>Username:</dt>
+            <dd><input type="text" name="user"></dd>
+            <dt>Password:</dt>
+            <dd><input type="password" name="password"></dd>
+        </dl>
+        <button type="submit" name="login">Log me in.</button>
+    </form>
+</div>
+{% endblock %}
