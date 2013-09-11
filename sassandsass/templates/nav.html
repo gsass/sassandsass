@@ -11,7 +11,7 @@
         {% for child in head.children %}
         <li> 
         <a href="{{ url_for('namedpage', name=child.alias) }}">{{ child.title }}</a> 
-        {{ forms.editchild(child.ID, parent.ID) if session.admin }}
+        {{ forms.editchild(child.ID, head.ID) if session.admin }}
         </li>
         {% endfor %}
         {% if session.admin %}

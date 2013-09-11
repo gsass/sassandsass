@@ -5,32 +5,30 @@ class Editor:
     def __init__(self):
         self.script=()
         self.args={}
-        self.COMMANDS = ('new', 'up', 'down', 'delete')
         self.CALLS = {
             'new' : 
-                {'head' : ('INSERT INTO nav (head, rank, children) ' +
-                    'VALUES (:head, :maxrank + 1, "");',),
-                 'child' : ('UPDATE nav SET children = (children || ":id,") '+
-                     'WHERE id = :parent')},
+                {'head' : ('INSERT INTO nav (id, head, rank, children) ' +
+                    'VALUES (:id, :head, :maxrank + 1, "");',),
+                    'child' : ('UPDATE nav SET children = :children '+
+                     'WHERE id = :parent;',)},
             'delete' :
                  {'head' : ('DELETE FROM nav WHERE id=:id',
-                    'DELETE FROM nav WHERE id IN :children'),
+                    'DELETE FROM nav WHERE id IN (:children)',),
                 "child": ("DELETE FROM nav WHERE id=:id",
-                    'UPDATE nav SET children = :children where id=:id')},
+                    'UPDATE nav SET children = :children where id=:parent',)},
             'up': 
                 {"head" : ("UPDATE nav SET rank = -1 where rank = :rank - 1",
                     'UPDATE nav SET rank = :rank - 1 WHERE rank = :rank',
-                    'UPDATE nav SET rank = :rank WHERE rank = -1'),
+                    'UPDATE nav SET rank = :rank WHERE rank = -1',),
                 "child" : ('UPDATE nav SET children = :children '+
-                    'WHERE id=:id',)},
+                    'WHERE id=:parent',)},
             'down':
                 {"head" : ("UPDATE nav SET rank = -1 where rank = :rank + 1",
                     'UPDATE nav SET rank = :rank + 1 WHERE rank = :rank',
-                    'UPDATE nav SET rank = :rank WHERE rank = -1'),
-                "child" : ('UPDATE nav SET children = :children '+
-                    'WHERE id=:id',)}
+                    'UPDATE nav SET rank = :rank WHERE rank = -1',),
+                "child" : ("UPDATE nav SET children = :children "+
+                    "WHERE id=:parent",)}
                 }
-        self.max_rank=g.db.execute("SELECT max(rank) FROM nav").fetchone()
 
     def edit_nav(self, form):
         msg = self.process_form(form)
@@ -47,13 +45,15 @@ class Editor:
                 break
         if not error:
             g.db.commit()
-        return "%s...%s" % (msg, "Success!" if not error else "\n"+error)
+        return "%s...%s" % (msg, "Success!" if not error 
+                            else "; %s,Arguments passed were %s." 
+                            % (error, self.args))
 
     def process_form(self, form):
         self.make_args(form)
         action = ""
         for key in form.keys():
-            if key in self.COMMANDS:
+            if key in self.CALLS:
                 action = key
                 break
         if action:
@@ -67,39 +67,44 @@ class Editor:
         name = g.db.execute("SELECT title from pages where id = ?",
                             self.args["id"]).fetchall()
         if action == 'new':
-            msg = "Attempting to add %s to navigation bar." % name
+            if self.args["head"]:
+                msg = "Attempting to add %s to navigation bar." % name[0]
+            else:
+                msg = "Attempting to add %s as a child element." % name[0]
+                self.siblings.append(self.args["id"])
+                self.args["children"] = ",".join(self.siblings)
         elif action == 'up':
             if self.args["head"]:
                 if self.args["rank"] == 1:
                     return "Item is already top rank."
             else:
-                if self.args["id"]==self.siblings[0]:
+                if self.siblings.index(self.args["id"]) == 0:
                     return "Child is already top rank."
                 i = self.siblings.index(self.args["id"])
                 temp = self.siblings[i-1]
                 self.siblings[i] = temp
                 self.siblings[i-1] = self.args["id"]
-                self.args["children"] = self.siblings.join(",")
-            msg = "Attempting to move %s up one rank" % name 
+                self.args["children"] = ','.join(self.siblings)
+            msg = "Attempting to move %s up one rank" % name[0] 
         elif action == 'down':
             if self.args["head"]:
-                if self.args["rank"] == self.max_rank:
+                if self.args["rank"] == self.args["maxrank"]:
                     return "Item is already lowest rank."
             else:
-                if self.args["id"]==self.siblings[-1]:
+                if self.siblings.index(self.args["id"]) == len(self.siblings)-1:
                     return "Child is already lowest rank."
                 i = self.siblings.index(self.args["id"])
                 temp = self.siblings[i+1]
                 self.siblings[i] = temp
                 self.siblings[i+1] = self.args["id"]
-                self.args["children"] = self.siblings.join(",")
-            msg = "Attempting to move %s up one rank" % name
+                self.args["children"] = ','.join(self.siblings)
+            msg = "Attempting to move %s down one rank" % name[0]
         elif action == 'delete':
             if not self.args["head"]:
                 self.siblings.remove(self.args["id"])
-                self.args["children"] = self.siblings.join(",")
-            msg = "Attempting to delete %s from navigation bar." % name
-
+                self.args["children"] = ','.join(self.siblings)
+            msg = "Attempting to delete %s from navigation bar." % name[0]
+        #Assign the correct script to the script variable.
         try:
             self.script = self.CALLS[action][actiontype]
         except KeyError:
@@ -111,19 +116,32 @@ class Editor:
     def make_args(self, form):
         for element in ["id","parent", "new"]:
             self.args[element] = (form[element] if element in form else "")
-        self.args["head"] = (self.args["parent"] in ["", "-1"])
-        if (self.args["parent"] not in [None, "-1"]):
+        ishead = (self.args["parent"] in ["", "-1"])       
+        self.args["head"] = ishead
+        if not ishead:
+            #If the element is a child, fetch parent element data.
             siblings = g.db.execute("SELECT children FROM nav WHERE id = ?",
                                         (self.args["parent"],)).fetchone()[0]
-            self.siblings = siblings.split(',')[0:-1]
-        elif self.args["id"]:
-            rank = g.db.execute("SELECT rank FROM nav where id = ?",
-                                    (self.args["id"],))
-            self.args["rank"] = rank.fetchone()
-            self.args["children"] = g.db.execute("SELECT children FROM nav "+
-                                                "WHERE id = ?",
-                                                 (self.args["id"],)).fetchone()
-            if self.max_rank:
-                self.args["maxrank"] = str(self.max_rank)
+            if siblings:
+                self.siblings = siblings.split(',')
             else:
-                self.args["maxrank"] = "0"
+                self.siblings = []
+        else:
+            #Try to operate on the element, or assign "" to the args.
+            children = g.db.execute("SELECT children FROM nav "+
+                                            "WHERE id = ?",
+                                            (self.args["id"],)).fetchone()
+            rank = g.db.execute("SELECT rank FROM nav "+
+                                            "where id = ?",
+                                            (self.args["id"],)).fetchone()
+            for attr, request in (("children", children), ("rank", rank)):
+                if request is not None:
+                    self.args[attr] = request[0]
+                else:
+                    self.args[attr] = ""
+
+        max_rank=g.db.execute("SELECT max(rank) FROM nav").fetchone()
+        if max_rank:
+            self.args["maxrank"] = str(max_rank[0])
+        else:
+            self.args["maxrank"] = "0"

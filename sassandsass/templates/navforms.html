@@ -12,7 +12,6 @@
 {% endmacro %}
 
 {%- macro editchild(id, parent) -%}
-    <input type="hidden" name="parent" value="{{ parent }}">
 <form class="editchild" action="{{ url_for('edit_nav') }}" method="POST">
     <button type="submit" name="up" value="up">&uarr;</button>
     <button type="submit" name="down" value="down">&darr;</button>
