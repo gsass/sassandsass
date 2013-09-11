@@ -15,7 +15,7 @@
 
 {% block rightcolumn %}
 <div id="rightcolumn">
-    {% include "rcolbracket.html" with context %}
+    {{ super() }}
     <div class="story">
         {{ content['content']|safe }}
     </div>
