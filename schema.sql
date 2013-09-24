@@ -15,3 +15,10 @@ create table nav (
   head Boolean default False,
   children text not null
 );
+
+drop table if exists users;
+create table users (
+  uname text not null,
+  id text,
+  tokenhash text
+);
