@@ -13,7 +13,7 @@ def get_user(userid):
         return user
     return None
 
-def activate_user():
+def do_login():
     user = get_user(get_handle())
     if user is not None:
         login_user(user)
@@ -26,6 +26,13 @@ def get_handle():
         return uname
     else:
         return user_info.data
+
+def get_tokenhash():
+    token = session.get('tumblr_token')
+    if token:
+        return make_secure_token(*token)
+    else:
+        return ''
 
 class User(UserMixin):
     def __init__(userid, active, token_hash):

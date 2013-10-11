@@ -94,8 +94,9 @@ def authenticate(resp):
                 resp['oauth_token'],
                 resp['oauth_token_secret']
                 )
-        user = users.activate_user()
-    flash("You were logged in as %s." % user.ID)
+        user = users.do_login()
+        if user:
+        flash("You were logged in as %s." % user.ID)
     return redirect(next_url)
 
 @app.route('/logout')
@@ -134,5 +135,20 @@ def init_db():
                 " Did you mean to import pages instead?")
     except sqlite3.OperationalError:
         init_db()
-        flash()
+        flash(session.get('success_msg'))
     return redirect(nexptage)
+
+@app.route('/add_admin')
+def add_admin():
+    if request.referrer == url_for('authenticate'):
+        handle = users.get_handle()
+        register_user(handle, users.get_tokenhash())
+        set_user_active(handle, True)
+    else:
+    users = g.db.execute("SELECT userid FROM users")
+    if users.fetchone() is not None:
+        flash ('Yo an admin already exists for this site.')
+        return redirect(request.args.get('next') or url_for('index'))
+    else:
+        return redirect(url_for('login'),
+                next=url_for('add_admin'))
