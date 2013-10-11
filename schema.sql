@@ -18,7 +18,7 @@ create table nav (
 
 drop table if exists users;
 create table users (
-  uname text not null,
-  id text,
-  tokenhash text
+  userid text unique not null,
+  tokenhash text,
+  active Boolean default False
 );
