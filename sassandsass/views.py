@@ -1,5 +1,7 @@
-from flask import render_template, url_for, request, redirect, flash, abort, session
-from sassandsass import app, lm
+from flask import render_template, url_for, \
+        request, redirect, flash, abort, session
+from sassandsass import app, lm, tumblr
+import sassandsass.user_management as users
 from sassandsass.dbtools import *
 from sassandsass.linkers import create_resource_link
 from sassandsass.navbar import generate_navbar
@@ -20,7 +22,8 @@ def index():
     session['admin'] = app.config["DEBUG"]
     index = app.config['LANDING_PAGE']
     if page_exists(index):
-        return render_template('content.html', content = fetch_page_content(index))
+        return render_template('content.html',
+                                content = fetch_page_content(index))
     else:
         flash("Yo you should import %s.xml" % index)
         return redirect(url_for('importpage'))
@@ -28,7 +31,8 @@ def index():
 @app.route('/<name>')
 def namedpage(name):
     if page_exists(name):
-        return render_template('content.html', content=fetch_page_content(name))
+        return render_template('content.html',
+                                content=fetch_page_content(name))
     else:
         abort(404)
 
@@ -66,23 +70,69 @@ def edit_nav():
         e = Editor()
         result = e.edit_nav(request.form)
         flash(result)
-    return redirect(request.headers['Referer'])
+    return redirect(request.referrer)
 
-@app.route('/login', methods=["GET", "POST"])
+@app.route('/login')
 def login():
-    if (request.method == "POST"):
-        pass
+    return tumblr.authorize(callback=url_for('authenticate',
+                next=request.args.get('next') or request.referrer or None))
+
+@app.route('/user')
+def user_test():
+    from flask.ext.login import current_user
+    return current_user
+
+@app.route('/authenticate')
+@tumblr.authorized_handler
+def authenticate(resp):
+    next_url = request.args.get('next') or url_for('index')
+    if resp is None:
+        flash(u'You denied the request to sign in.')
+        return redirect(next_url)
     else:
-        return render_template("login.html")
+        session['tumblr_token'] = (
+                resp['oauth_token'],
+                resp['oauth_token_secret']
+                )
+        user = users.activate_user()
+    flash("You were logged in as %s." % user.ID)
+    return redirect(next_url)
+
+@app.route('/logout')
+def logout():
+    session['tumblr_token'] = None
+    flash("Logged out succesfully.")
+    return redirect(url_for('index'))
+
+@app.route('/install')
+def install():
+    install_steps = (
+            ('init_db', "DB Initialized.  Want to import some pages now?"),
+            ('add_users', "You added %s as the site admin, and are logged in.\
+                    Let's import some content now."),
+            ('import_pages': "Great!  You're set to go.\
+                    Visit '/admin' to make further changes."))
+    current_step =  session.get('INSTALL_STEP')
+    if current_step is not None:
+        current_step += 1
+        if current_step < len(install_steps):
+            nextpage, success_msg = install_steps[current_step]
+            session['success_msg'] = success_msg
+            return redirect(url_for(nextpage), next = url_for('install'))
+        else:
+            return redirect(url_for('index'))
 
 @app.route('/init_db')
-def install():
+def init_db():
+    nextpage = (request.args.get('next')
+            or request.referrer
+            or url_for('importpage'))
     try:
         #test to check if DB exists
         g.db.execute("SELECT id FROM pages")
-        flash("DB already initialized.  Did you mean to import pages instead?")
+        flash("DB already initialized."+
+                " Did you mean to import pages instead?")
     except sqlite3.OperationalError:
         init_db()
-        flash("DB Initialized.  Care to import some pages now?")
-    return redirect(url_for('importpage'))
-
+        flash()
+    return redirect(nexptage)
