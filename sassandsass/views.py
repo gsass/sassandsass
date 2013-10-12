@@ -1,5 +1,6 @@
 from flask import render_template, url_for, \
         request, redirect, flash, abort, session
+from flask.ext.login import current_user
 from sassandsass import app, lm, tumblr
 import sassandsass.user_management as users
 from sassandsass.dbtools import *
@@ -74,13 +75,14 @@ def edit_nav():
 
 @app.route('/login')
 def login():
-    return tumblr.authorize(callback=url_for('authenticate',
-                next=request.args.get('next') or request.referrer or None))
-
-@app.route('/user')
-def user_test():
-    from flask.ext.login import current_user
-    return current_user
+    if not current_user.is_anonymous():
+        flash("Yo you're already logged in.")
+        return redirect(request.referrer or url_for('index'))
+    else:
+        if session.has_key('tumblr_token'):
+            del session['tumblr_token']
+        return tumblr.authorize(callback=url_for('authenticate',
+                    next=request.args.get('next') or request.referrer or None))
 
 @app.route('/authenticate')
 @tumblr.authorized_handler
@@ -96,7 +98,7 @@ def authenticate(resp):
                 )
         user = users.do_login()
         if user:
-        flash("You were logged in as %s." % user.ID)
+            flash("You were logged in as %s." % user.get_id())
     return redirect(next_url)
 
 @app.route('/logout')
@@ -108,23 +110,23 @@ def logout():
 @app.route('/install')
 def install():
     install_steps = (
-            ('init_db', "DB Initialized.  Want to import some pages now?"),
-            ('add_users', "You added %s as the site admin, and are logged in.\
+            ('check_db', "DB Initialized."),
+            ('add_admin', "You added %s as the site admin, and are logged in.\
                     Let's import some content now."),
-            ('import_pages': "Great!  You're set to go.\
+            ('import_pages', "Great!  You're set to go.\
                     Visit '/admin' to make further changes."))
-    current_step =  session.get('INSTALL_STEP')
-    if current_step is not None:
-        current_step += 1
-        if current_step < len(install_steps):
-            nextpage, success_msg = install_steps[current_step]
-            session['success_msg'] = success_msg
-            return redirect(url_for(nextpage), next = url_for('install'))
-        else:
-            return redirect(url_for('index'))
+    current_step =  (session.get('INSTALL_STEP') or 0)
+    if current_step + 1 < len(install_steps):
+        nextpage, success_msg = install_steps[current_step]
+        session['success_msg'] = success_msg
+        session['INSTALL_STEP'] = current_step + 1
+        return redirect(url_for(nextpage, next=url_for('install')))
+    else:
+        session['INSTALL_STEP'] = None
+        return redirect(url_for('index'))
 
-@app.route('/init_db')
-def init_db():
+@app.route('/check_db')
+def check_db():
     nextpage = (request.args.get('next')
             or request.referrer
             or url_for('importpage'))
@@ -136,19 +138,24 @@ def init_db():
     except sqlite3.OperationalError:
         init_db()
         flash(session.get('success_msg'))
-    return redirect(nexptage)
+    return redirect(nextpage)
 
 @app.route('/add_admin')
 def add_admin():
-    if request.referrer == url_for('authenticate'):
-        handle = users.get_handle()
-        register_user(handle, users.get_tokenhash())
-        set_user_active(handle, True)
-    else:
-    users = g.db.execute("SELECT userid FROM users")
-    if users.fetchone() is not None:
+    admins = g.db.execute("SELECT userid FROM users WHERE active")
+    handle = users.get_handle()
+    if admins.fetchone() is not None:
+        #Do nothing if admins already exist.
         flash ('Yo an admin already exists for this site.')
-        return redirect(request.args.get('next') or url_for('index'))
+    elif handle is not None:
+        #Add an admin once the user has authenticated via tumblr.
+        reg = register_user(handle, users.get_tokenhash())
+        flash(reg)
+        active = set_user_active(handle, True)
+        flash(active)
+        users.do_login()
+        flash(session.get('success_msg') % handle)
     else:
-        return redirect(url_for('login'),
-                next=url_for('add_admin'))
+        #Ask the user to authenticate if they haven't yet.
+        return redirect(url_for('login', next=url_for('add_admin')))
+    return redirect(request.args.get('next') or url_for('index'))

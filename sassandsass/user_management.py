@@ -7,7 +7,7 @@ import json
 
 @lm.user_loader
 def get_user(userid):
-    info = get_user_info(ID=userid)
+    info = get_user_info(userid=userid)
     if info:
         user = User(*info)
         return user
@@ -25,7 +25,7 @@ def get_handle():
         uname = user_info.data['response']['user']['name']
         return uname
     else:
-        return user_info.data
+        return None
 
 def get_tokenhash():
     token = session.get('tumblr_token')
@@ -34,16 +34,20 @@ def get_tokenhash():
     else:
         return ''
 
+@tumblr.tokengetter
+def get_token(token=None):
+    return session.get('tumblr_token')
+
 class User(UserMixin):
-    def __init__(userid, active, token_hash):
-        self.ID = userid
+    def __init__(self, userid, active, token_hash):
+        self.userid = userid
         self.active = active
         self.token_hash = token_hash
 
-    def is_active():
+    def is_active(self):
         return self.active
 
-    def is_authenticated():
+    def is_authenticated(self):
         #Checks for a token, which is required for authentication.
         token = session.get('tumblr_token')
         if token:
@@ -52,15 +56,11 @@ class User(UserMixin):
                 return True
             '''Otherwise, check that the token gets info for a blog,
             and is therefore a valid auth for our uname'''
-            if get_handle() == self.ID:
-                update_user_tokenhash(self.ID, 
+            if get_handle() == self.userid:
+                update_user_tokenhash(self.userid, 
                         make_secure_token(*token))
                 return True
         return False
 
-    def get_id():
-        return self.ID
-
-@tumblr.tokengetter
-def get_token(token=None):
-        return session.get('tumblr_token')
+    def get_id(self):
+        return self.userid
