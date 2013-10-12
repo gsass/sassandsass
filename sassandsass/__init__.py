@@ -13,7 +13,7 @@ lm.login_view = 'login'
 #Set up authentication via tumblr
 auth = OAuth()
 tumblr = auth.remote_app('tumblr',
-        base_url = 'http://api.tumblr.com',
+        base_url = 'http://api.tumblr.com/v2/',
         request_token_url = 'http://www.tumblr.com/oauth/request_token',
         access_token_url = 'http://www.tumblr.com/oauth/access_token',
         authorize_url = 'http://www.tumblr.com/oauth/authorize',
