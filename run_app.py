@@ -4,14 +4,12 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--debug", help="run in debug mode")
+parser.add_argument("--debug", help="run in debug mode", action="store_true")
 args = parser.parse_args()
 
-debug = ((args.debug=="True") if args.debug is not None else False)
-
-if debug:
+if args.debug:
     app.config.from_object(config.DebugConfig)
 else:
     app.config.from_object(config.Config)
 
-app.run(debug = debug)
+app.run()
