@@ -2,11 +2,11 @@
 	<meta http-equiv="Content-Type" content="text/html/css; charset=utf-8" />
         <title>Sass & Sass{{" - %s" % content.title if content }}</title>
 	
-	{% for stylesheet in ["structure.css", "content.css", "nav.css" ] %}
+	{% for stylesheet in config.STYLES %}
 	{{ create_resource_link("link", prefix="css", type="text/css", rel="stylesheet", href=stylesheet)|safe }}
 	{% endfor %}
 
-	{% for script in ["jquery-1.10.2.min.js","jquery.nav.js"] %}
+	{% for script in config.SCRIPTS %}
 	{{ create_resource_link("script", prefix="scripts", type="text/javascript", src=script)|safe }} 
 	{% endfor %}
 
