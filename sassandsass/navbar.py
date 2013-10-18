@@ -1,6 +1,7 @@
 from sassandsass import app
 from flask import g
 
+@app.context_processor
 def generate_navbar():
     navbar={}
     pages = g.db.execute('SELECT id, children from nav order by rank asc')
@@ -9,7 +10,7 @@ def generate_navbar():
                 children=get_page_descriptor(row[1])
                 ) 
              for row in pages.fetchall()]
-    return navbar
+    return dict(navbar=navbar)
 
 def get_page_descriptor(ids):
     if ids:

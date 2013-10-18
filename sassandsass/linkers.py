@@ -1,4 +1,9 @@
+from sassandsass import app
 from flask import url_for
+
+@app.context_processor
+def linkers():
+    return dict(create_resource_link = create_resource_link)
 
 def create_resource_link(name, prefix="", **kwargs):
     link_attributes = ['href', 'src']
