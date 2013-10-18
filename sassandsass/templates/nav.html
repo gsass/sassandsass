@@ -1,7 +1,6 @@
 {% import "navforms.html" as forms %}
 
 <ul class="heads">
-{% set navbar = generate_navbar() %}
 {% for head in navbar %}
     <li>
     <a href="{{ url_for('namedpage', name=head.page.alias) }}">{{ head.page.title }}</a>

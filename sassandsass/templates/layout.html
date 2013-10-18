@@ -23,7 +23,7 @@
                                         <p class="slogan">Helping the body fight disease&trade;</p>
                                     </div>
                                     
-                                    {% for message in get_flashed_messages() %}
+                                    {% for message in get_flashed_messages()[::-1] %}
                                     <div class=flash>{{ message }}</div>
                                     {% endfor %}
 

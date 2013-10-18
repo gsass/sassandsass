@@ -8,7 +8,7 @@
     37830
     </p>
 
-    {% for icon, link in zip(["Twitter", "LinkedIn"], ["https://twitter.com/sassandsass", "https://www.linkedin.com/company/3269338?trk=tyah"]) %}
+    {% for icon, link in config.MEDIA_ICONS.items() %}
     <a class="icon" href="{{ link  }}"><img src={{ url_for("static", filename="img/icons/PNG/Gray/%s.png" % icon) }}/></a>
     {% endfor %}
     <!--Icon set from  http://medialoot.com/item/round-social-media-icons/-->    
