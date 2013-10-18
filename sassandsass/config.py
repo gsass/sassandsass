@@ -5,6 +5,8 @@ class Config:
     DEBUG = False
     STYLES = ["structure.css", "content.css", "nav.css" ]
     SCRIPTS = ["jquery-1.10.2.min.js","jquery.nav.js"]
+    MEDIA_ICONS = {"Twitter": "https://twitter.com/sassandsass",
+            "LinkedIn": "https://www.linkedin.com/company/3269338?trk=tyah"}
     
 class DebugConfig(Config):
     DEBUG = True
