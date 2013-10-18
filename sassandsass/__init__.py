@@ -22,3 +22,6 @@ tumblr = auth.remote_app('tumblr',
 
 #Import app views - TODO: possible import for debugging views?
 import sassandsass.views
+import sassandsass.dbtools
+import sassandsass.linkers
+
