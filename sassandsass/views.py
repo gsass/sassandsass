@@ -1,22 +1,14 @@
 from flask import render_template, url_for, \
         request, redirect, flash, abort, session
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_required, logout_user
 from sassandsass import app, lm, tumblr
-import sassandsass.user_management as users
-from sassandsass.dbtools import *
-from sassandsass.linkers import create_resource_link
-from sassandsass.navbar import generate_navbar
+from sassandsass.dbtools import fetch_page_content, page_exists
 from sassandsass.xml_import import XMLExtractor as XE
 from sassandsass.edit_nav import Editor
 from werkzeug import secure_filename
+import sassandsass.user_management as users
 import sqlite3
 
-
-'''Add functions which are called from views to the app's jinja context.'''
-app.jinja_env.globals.update(create_resource_link = create_resource_link)
-app.jinja_env.globals.update(generate_navbar = generate_navbar)
-app.jinja_env.globals.update(get_available_pages = get_available_pages)
-app.jinja_env.globals.update(zip = zip)
 
 @app.route('/')
 def index():
@@ -101,10 +93,11 @@ def authenticate(resp):
             flash("You were logged in as %s." % user.get_id())
     return redirect(next_url)
 
+@login_required
 @app.route('/logout')
 def logout():
     session['tumblr_token'] = None
-    flash("Logged out succesfully.")
+    logout_user()
     return redirect(url_for('index'))
 
 @app.route('/install')
