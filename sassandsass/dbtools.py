@@ -33,17 +33,21 @@ def fetch_page_content(pagename):
             "FROM pages WHERE link_alias = ?", (pagename,))
     return dict(zip(["title","blurb", "img", "content"], cur.fetchone()))
 
+@app.context_processor
 def get_available_pages():
     cur = g.db.execute("SELECT id, title from pages "+
                         "WHERE id NOT IN (SELECT id FROM nav)")
-    return cur.fetchall()
+    return dict(available_pages = cur.fetchall())
 
 def get_user_info(**kwargs):
     if 'userid' in kwargs:
         with closing(connect_db()) as db:
-            cur = db.execute("SELECT userid, active, tokenhash FROM users "+
-                "WHERE userid = :userid", kwargs)
-            return cur.fetchone()
+            try:
+                cur = db.execute("SELECT userid, active, tokenhash FROM users "+
+                    "WHERE userid = :userid", kwargs)
+                return cur.fetchone()
+            except sqlite3.OperationalError:
+                return None
     return None
 
 def register_user(userid, tokenhash = ''):
