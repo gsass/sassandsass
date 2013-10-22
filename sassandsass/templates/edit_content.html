@@ -1,0 +1,15 @@
+{%- macro edit_button(section) -%}
+<form>
+    <input type="hidden" name="section" value="{{ section }}">
+    <button type="submit" action="/edit" name="edit">Edit</button>
+</form>
+{% endmacro %}
+
+{%- macro edit_form(pagename, content, section) -%}
+<form>
+    <textarea name="edited">{{ content[section] }}</textarea>
+    <input type="hidden" name="page" value="{{ pagename }}">
+    <input type="hidden" name="section" value="{{ section }}">
+    <button type="submit" action="{{ url_for('edit_page') }}" name="edit">Done</button>
+</form>
+{% endmacro %}

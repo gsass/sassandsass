@@ -1,6 +1,6 @@
 from flask import render_template, url_for, \
-        request, redirect, flash, abort, session
-from flask.ext.login import current_user, login_required, logout_user
+        request, redirect, flash, abort, session, g, get_template_arrtibute
+from flask.ext.login import login_required, logout_user
 from sassandsass import app, lm, tumblr
 from sassandsass.dbtools import fetch_page_content, page_exists
 from sassandsass.xml_import import XMLExtractor as XE
@@ -12,7 +12,6 @@ import sqlite3
 
 @app.route('/')
 def index():
-    session['admin'] = app.config["DEBUG"]
     index = app.config['LANDING_PAGE']
     if page_exists(index):
         return render_template('content.html',
@@ -57,17 +56,30 @@ def importpage():
         return redirect(url_for('index'))
     return render_template('import.html')
 
-@app.route('/edit_nav', methods = ["GET", "POST"])
+@app.route('/</name>/edit', methods = ["POST"])
+def get_edit_form(name):
+    edit_section = request.form["section"]
+    form = get_template_attribute('edit_content.html', request.form["type"])
+    return form(name, fetch_page_content(name), edit_section)
+
+@login_required
+@app.route('/edit_page', methods = ["POST"])
+def edit_page():
+    msg = update_page_content(request.form)
+    flash(msg)
+    return redirect(request.referrer)
+
+@login_required
+@app.route('/edit_nav', methods = ["POST"])
 def edit_nav():
-    if (request.method == "POST"):
-        e = Editor()
-        result = e.edit_nav(request.form)
-        flash(result)
+    e = Editor()
+    result = e.edit_nav(request.form)
+    flash(result)
     return redirect(request.referrer)
 
 @app.route('/login')
 def login():
-    if not current_user.is_anonymous():
+    if g.logged_in:
         flash("Yo you're already logged in.")
         return redirect(request.referrer or url_for('index'))
     else:
