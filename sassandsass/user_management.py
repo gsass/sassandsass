@@ -1,6 +1,7 @@
-from flask import session
-from flask.ext.login import UserMixin, login_user, make_secure_token
-from sassandsass import lm, tumblr
+from flask import g, session
+from flask.ext.login import UserMixin, login_user, \
+        make_secure_token, current_user
+from sassandsass import app, lm, tumblr
 from sassandsass.dbtools import get_user_info, update_user_tokenhash 
 import json
 
@@ -12,6 +13,10 @@ def get_user(userid):
         user = User(*info)
         return user
     return None
+
+@app.before_request
+def check_login():
+    g.logged_in = current_user.is_authenticated()
 
 def do_login():
     user = get_user(get_handle())

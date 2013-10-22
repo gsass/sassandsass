@@ -4,23 +4,23 @@
 {% for head in navbar %}
     <li>
     <a href="{{ url_for('namedpage', name=head.page.alias) }}">{{ head.page.title }}</a>
-    {{ forms.edithead(head.ID) if session.admin }}
-    {% if (head.children|count or session.admin) %}
+    {{ forms.edithead(head.ID) if g.logged_in }}
+    {% if (head.children|count or g.logged_in) %}
     <ul class="l1">
         {% for child in head.children %}
         <li> 
         <a href="{{ url_for('namedpage', name=child.alias) }}">{{ child.title }}</a> 
-        {{ forms.editchild(child.ID, head.ID) if session.admin }}
+        {{ forms.editchild(child.ID, head.ID) if g.logged_in }}
         </li>
         {% endfor %}
-        {% if session.admin %}
-        <li>{{ forms.additem("addchild", head.ID) if session.admin }}</li>
+        {% if g.logged_in %}
+        <li>{{ forms.additem("addchild", head.ID) if g.logged_in }}</li>
         {% endif %}
     </ul>
     {% endif %}
     </li>
 {% endfor %}
-{% if session.admin %}
-    <li>{{ forms.additem("addhead", -1) if session.admin}}</li>
+{% if g.logged_in %}
+    <li>{{ forms.additem("addhead", -1) if g.logged_in}}</li>
 {% endif %}
 </ul>
