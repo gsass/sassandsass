@@ -4,13 +4,15 @@
 {% block leftcolumn %}
 {{ super() }}
 <div class="photobox">
-    <img class="bigimg" src= {{ url_for('static', filename = "img/%s" % content["img"]) }} /> 
+    <img class="bigimg" src= {{ url_for('static', filename = "img/%s" % content["img"]) }} />
+    {{ edits.edit_button(name, "bigimg", "img_selector") if g.logged_in }}
 </div>
 
 <div class="blurb">
     <h2>
         {{ content["blurb"] }}
     </h2>
+    {{ edits.edit_button(name, "blurb", "edit_form") if g.logged_in }}
 </div>
 {% endblock %}
 
@@ -18,7 +20,8 @@
 <div id="rightcolumn">
     {{ super() }}
     <div class="story">
-        {{ content['content']|safe }}
+        {{ content["content"]|safe }}
+        {{ edits.edit_button(name, "content", "edit_form") if g.logged_in }}
     </div>
 </div>
 {% endblock %}
