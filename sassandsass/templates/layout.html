@@ -1,47 +1,49 @@
 <!doctype html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-	{% block head %}
-	{% include "head.html" with context%}
-	{% endblock %}
+    {% block head %}
+    {% include "head.html" with context%}
+    {% endblock %}
 
-	<body>
-		<div id="container">
-			<div id="content">
+    <body>
+        <div id="container">
+            <div id="content">
+                {% block content %}
 
-			{% block content %}
-				<div id="leftcolumn">
-                                    {% block leftcolumn %}
-                                    <div class='identity'>
-                                        <a href="{{ url_for('index') }}">
-                                            <div class='logo'>
-                                                <p>SASS<span>&amp;</span>SASS</p>
-                                            </div>
-                                        </a>
-                                        <p class="slogan">Helping the body fight disease&trade;</p>
-                                    </div>
-                                    
-                                    {% for message in get_flashed_messages()[::-1] %}
-                                    <div class=flash>{{ message }}</div>
-                                    {% endfor %}
+                <div id="leftcolumn">
+                    {% block leftcolumn %}
 
-                                    {% endblock %}
-				</div>
+                    <div class='identity'>
+                        <a href="{{ url_for('index') }}">
+                            <div class='logo'>
+                                <p>SASS<span>&amp;</span>SASS</p>
+                            </div>
+                        </a>
+                        <p class="slogan">Helping the body fight disease&trade;</p>
+                    </div>
 
-				{% block rightcolumn %}
-                                {% include "rcolbracket.html" with context %}
-				{% endblock %}
-			{% endblock %}
-			</div>
+                    {% for message in get_flashed_messages()[::-1] %}
+                    <div class=flash>{{ message }}</div>
+                    {% endfor %}
 
-			<div id="nav">
-                            {% block nav %}
-                            {% include "nav.html" ignore missing with context %}
-                            {% endblock %}
-			</div>
-		</div>
-	</body>
+                    {% endblock %}
+                </div>
+
+                {% block rightcolumn %}
+                {% include "rcolbracket.html" with context %}
+                {% endblock %}
+
+                {% endblock %}
+            </div>
+
+            <div id="nav">
+                {% block nav %}
+                {% include "nav.html" ignore missing with context %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
 
 </html>
