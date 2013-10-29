@@ -5,7 +5,6 @@
     <li>
     <a href="{{ url_for('namedpage', name=head.page.alias) }}">{{ head.page.title }}</a>
     {{ forms.edithead(head.ID) if g.logged_in }}
-    {% if (head.children|count or g.logged_in) %}
     <ul class="l1">
         {% for child in head.children %}
         <li> 
@@ -14,10 +13,9 @@
         </li>
         {% endfor %}
         {% if g.logged_in %}
-        <li>{{ forms.additem("addchild", head.ID) if g.logged_in }}</li>
+        <li>{{ forms.additem("addchild", head.ID)}}</li>
         {% endif %}
     </ul>
-    {% endif %}
     </li>
 {% endfor %}
 {% if g.logged_in %}
