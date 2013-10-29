@@ -7,11 +7,29 @@
 </form>
 {% endmacro %}
 
-{%- macro edit_form(pagename, content, section) -%}
-<form class="edit_section">
-    <textarea name="edited" rows=10>{{ content[section]|safe }}</textarea>
+{%- macro edit_form(pagename, content, data) -%}
+<form class="edit_section" action="{{ url_for('edit_page') }}" method="POST">
+    <textarea name="edited" rows=10>{{ content[data["section"]]|safe }}</textarea>
     <input type="hidden" name="page" value="{{ pagename }}">
-    <input type="hidden" name="section" value="{{ section }}">
-    <button type="submit" action="{{ url_for('edit_page') }}" name="edit">Done</button>
+    <input type="hidden" name="section" value="{{ data["section"] }}"><br>
+    <button type="submit" name="edit">Done</button>
+</form>
+{% endmacro %}
+
+{%- macro img_selector(pagename, content, data) -%}
+<form class="edit_image" action="{{ url_for('edit_page') }}" method="POST" enctype=multipart/form-data>
+    <dl>
+        <dt>Select an uploaded image:</dt>
+        <dd>
+        {% for imgname in data["images"] %}
+        <label for="{{ imgname }}"><img src={{ url_for('static', filename = "img/%s" % imgname) }}></label>
+        <input type="radio" name="sex" id="{{ imgname }}" value="{{ imgname }}"><br>
+        {% endfor %}
+        </dd>
+        <dt>or upload a new image</dt>
+        <dd><input type="file" name="img" value="{{ section }}"></dd>
+    </dl>
+    <input type="hidden" name="page" value="{{ pagename }}">
+    <button type="submit" name="edit">Done</button>
 </form>
 {% endmacro %}
