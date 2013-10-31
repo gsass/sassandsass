@@ -2,7 +2,7 @@
 <form class="additem" name="{{ name }}" action="{{ url_for('edit_nav') }}" method="POST">
     <select name="id">
         <option value="title" selected disabled>{{ message }}</option>
-        {% for id, title in available_pages %}
+        {% for id, title in available_pages() %}
         <option value="{{ id }}">{{ title }}</option>
         {% endfor %}
     </select>

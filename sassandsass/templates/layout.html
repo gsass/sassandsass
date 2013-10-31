@@ -9,6 +9,12 @@
 
     <body>
         <div id="container">
+            <div class=flash>
+                {% for message in get_flashed_messages()[::-1] %}
+                <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+
             <div id="content">
                 {% block content %}
 
@@ -23,10 +29,6 @@
                         </a>
                         <p class="slogan">Helping the body fight disease&trade;</p>
                     </div>
-
-                    {% for message in get_flashed_messages()[::-1] %}
-                    <div class=flash>{{ message }}</div>
-                    {% endfor %}
 
                     {% endblock %}
                 </div>

@@ -1,18 +1,57 @@
 form{
-	position: relative;
-	max-width: 100%;
-	max-height: 100%;
+    text-align: left;
+    max-width: 100%;
+    max-height: 100%;
 }
 
-form.edit_image{
-	overflow: scroll;
+/* Styles for non-editor forms. */
+.admin_form{
+    width: 80%;
+    margin: 0 auto;
+    border-style: none solid double solid;
+    border-width: 4px 1px;
+    padding: 1em .5em;
 }
 
-form.edit_image input[type=radio] {
-	display:none; 
-	margin:10px;
+/* Styles for image editor forms. */
+.edit_image{
+    overflow: auto;
 }
 
-form.edit_section textarea{
-	width: 90%;
+.edit_image input[type=radio] {
+    visibility: hidden; 
+}
+
+.edit_image input[type=radio]:checked + label img{
+    border: double black;
+    padding: 0px;
+}
+
+.edit_image img{
+    max-height: 100px;
+    max-width: 45%;
+    margin-right: 2%;
+    border: double transparent;
+    float: left;
+}
+
+.edit_image dt{
+    clear: both;
+    font-weight: bold;
+    padding-top: 1em;
+}
+
+.edit_image dd{
+    max-height: 210px;
+    overflow: auto;
+}
+
+/* Styles for text editor forms */
+.edit_section textarea{
+    width: 90%;
+}
+
+/* Styles for nav editing */
+.edithead, .editchild{
+float: right;
 }

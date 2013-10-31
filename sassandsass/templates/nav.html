@@ -1,7 +1,7 @@
-{% import "navforms.html" as forms %}
+{% import "navforms.html" as forms with context%}
 
 <ul class="heads">
-{% for head in navbar %}
+{% for head in get_navbar() %}
     <li>
     <a href="{{ url_for('namedpage', name=head.page.alias) }}">{{ head.page.title }}</a>
     {{ forms.edithead(head.ID) if g.logged_in }}
@@ -19,6 +19,6 @@
     </li>
 {% endfor %}
 {% if g.logged_in %}
-    <li>{{ forms.additem("addhead", -1) if g.logged_in}}</li>
+    <li>{{ forms.additem("addhead") if g.logged_in}}</li>
 {% endif %}
 </ul>
