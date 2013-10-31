@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block rightcolumn %}
+<div id="newscolumn">
+    {{ super() }}
+    <div class="story">
+        {% for post in posts %}
+        <div class="post">
+            <h3>{{ post.title }}</h3>
+            {{ post.body | safe }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block leftcolumn %}
+{{ super() }}
+<div class="blurb">
+    <h2>Hot off the press (or rather, our <a href="sassandsass.tumblr.com">tumblr</a>), come updates about what's going on right now.</h2>
+</div>
+{% endblock %}
