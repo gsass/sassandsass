@@ -24,4 +24,5 @@ tumblr = auth.remote_app('tumblr',
 import sassandsass.views
 import sassandsass.dbtools
 import sassandsass.linkers
-
+import sassandsass.images
+import sassandsass.navbar
