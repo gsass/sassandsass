@@ -65,7 +65,7 @@ class Editor:
     def handle_action(self, action):
         actiontype = ("head" if self.args["head"] else "child")
         name = g.db.execute("SELECT title from pages where id = ?",
-                            self.args["id"]).fetchall()
+                            (self.args["id"],)).fetchall()
         if action == 'new':
             if self.args["head"]:
                 msg = "Attempting to add %s to navigation bar." % name[0]
