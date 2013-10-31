@@ -3,14 +3,15 @@ from flask import g
 
 @app.context_processor
 def generate_navbar():
-    navbar={}
-    pages = g.db.execute('SELECT id, children from nav order by rank asc')
-    navbar = [dict(ID=row[0],
-                page=get_page_descriptor(row[0])[0],
-                children=get_page_descriptor(row[1])
-                ) 
-             for row in pages.fetchall()]
-    return dict(navbar=navbar)
+    def inner():
+        pages = g.db.execute('SELECT id, children from nav order by rank asc')
+        navbar = [dict(ID=row[0],
+                    page=get_page_descriptor(row[0])[0],
+                    children=get_page_descriptor(row[1])
+                    ) 
+                 for row in pages.fetchall()]
+        return navbar
+    return dict(get_navbar=inner)
 
 def get_page_descriptor(ids):
     if ids:
