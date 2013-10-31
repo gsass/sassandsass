@@ -1,10 +1,11 @@
 from flask import render_template, url_for, \
-        request, redirect, flash, abort, session, g, get_template_arrtibute
+        request, redirect, flash, abort, session, g, get_template_attribute
 from flask.ext.login import login_required, logout_user
 from sassandsass import app, lm, tumblr
-from sassandsass.dbtools import fetch_page_content, page_exists
+from sassandsass.dbtools import *
 from sassandsass.xml_import import XMLExtractor as XE
 from sassandsass.edit_nav import Editor
+from sassandsass.images import get_available_images
 from werkzeug import secure_filename
 import sassandsass.user_management as users
 import sqlite3
@@ -15,7 +16,8 @@ def index():
     index = app.config['LANDING_PAGE']
     if page_exists(index):
         return render_template('content.html',
-                                content = fetch_page_content(index))
+                name=index,
+                content = fetch_page_content(index))
     else:
         flash("Yo you should import %s.xml" % index)
         return redirect(url_for('importpage'))
@@ -24,14 +26,19 @@ def index():
 def namedpage(name):
     if page_exists(name):
         return render_template('content.html',
-                                content=fetch_page_content(name))
+                name=name,
+                content=fetch_page_content(name))
     else:
         abort(404)
 
 @app.route('/news')
-def newspage(name):
-    return render_template('news.html', article=article)
+def newspage():
+    blog = tumblr.get("blog/sassandsass.tumblr.com/posts/text",
+            data = dict(api_key=app.config["CONSUMER_KEY"]))
+    posts = blog.data["response"]["posts"]
+    return render_template('news.html', posts=posts)
 
+@login_required
 @app.route('/import', methods = ["GET", "POST"])
 def importpage():
     if (request.method == "POST"):
@@ -43,7 +50,7 @@ def importpage():
                 importer.import_page( '\n'.join(resource.readlines()),
                                     secure_filename(resource.filename),
                                     )
-            except (sqlite3.Error, IOError) as e:
+            except Exception as e:
                 errors[secure_filename(resource.filename)] = e
 
         if len(errors):
@@ -56,16 +63,26 @@ def importpage():
         return redirect(url_for('index'))
     return render_template('import.html')
 
-@app.route('/</name>/edit', methods = ["POST"])
-def get_edit_form(name):
-    edit_section = request.form["section"]
-    form = get_template_attribute('edit_content.html', request.form["type"])
-    return form(name, fetch_page_content(name), edit_section)
+@app.route('/get_editor', methods=["POST"])
+def get_edit_form():
+    page = request.form.get("page")
+    edit_data = {"section": request.form.get("section"),
+                "images": get_available_images()}
+    form = get_template_attribute('edit_content.html', 
+            request.form.get("type"))
+    return form(page, fetch_page_content(page), edit_data)
 
 @login_required
 @app.route('/edit_page', methods = ["POST"])
 def edit_page():
     msg = update_page_content(request.form)
+    flash(msg)
+    return redirect(request.referrer)
+
+@login_required
+@app.route('/edit_image', methods = ["POST"])
+def edit_page_image():
+    msg = update_page_image(request.form, request.files)
     flash(msg)
     return redirect(request.referrer)
 
@@ -118,7 +135,7 @@ def install():
             ('check_db', "DB Initialized."),
             ('add_admin', "You added %s as the site admin, and are logged in.\
                     Let's import some content now."),
-            ('import_pages', "Great!  You're set to go.\
+            ('import', "Great!  You're set to go.\
                     Visit '/admin' to make further changes."))
     current_step =  (session.get('INSTALL_STEP') or 0)
     if current_step + 1 < len(install_steps):
