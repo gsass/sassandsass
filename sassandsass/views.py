@@ -38,8 +38,8 @@ def newspage():
     posts = blog.data["response"]["posts"]
     return render_template('news.html', posts=posts)
 
-@login_required
 @app.route('/import', methods = ["GET", "POST"])
+@login_required
 def importpage():
     if (request.method == "POST"):
         importer = XE()
@@ -72,22 +72,22 @@ def get_edit_form():
             request.form.get("type"))
     return form(page, fetch_page_content(page), edit_data)
 
-@login_required
 @app.route('/edit_page', methods = ["POST"])
+@login_required
 def edit_page():
     msg = update_page_content(request.form)
     flash(msg)
     return redirect(request.referrer)
 
-@login_required
 @app.route('/edit_image', methods = ["POST"])
+@login_required
 def edit_page_image():
     msg = update_page_image(request.form, request.files)
     flash(msg)
     return redirect(request.referrer)
 
-@login_required
 @app.route('/edit_nav', methods = ["POST"])
+@login_required
 def edit_nav():
     e = Editor()
     result = e.edit_nav(request.form)
@@ -122,8 +122,8 @@ def authenticate(resp):
             flash("You were logged in as %s." % user.get_id())
     return redirect(next_url)
 
-@login_required
 @app.route('/logout')
+@login_required
 def logout():
     session['tumblr_token'] = None
     logout_user()
